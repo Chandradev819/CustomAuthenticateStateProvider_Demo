@@ -1,0 +1,23 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<h3>Admin Page</h3>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <h3>Authorized Content</h3>
+        <p>This content is only visible to authenticated users with the "Admin" role.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to view this content. Please log in with an Admin account.</p>
+        <button @onclick="GoToLogin">Go to Login</button>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private void GoToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+}
