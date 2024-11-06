@@ -7,12 +7,13 @@
         <NavMenu />
     </div>
     <main>
+        <div>
+            @Body
+        </div>
         <AuthorizeView Roles="Admin">
             <Authorized>
                 <button @onclick="Logout">Logout</button>
-                <div>
-                    @Body
-                </div>
+                
             </Authorized>
             <NotAuthorized>
                 <div>

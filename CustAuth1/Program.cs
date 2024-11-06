@@ -10,7 +10,6 @@ builder.Services.AddServerSideBlazor()
 builder.Services.AddAuthenticationCore();
 // Register the CustomAuthenticateStateProvider as a scoped service
 builder.Services.AddScoped<CustomAuthenticateStateProvider>();
-// Register AuthenticationStateProvider to use your custom provider
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticateStateProvider>());
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddRazorComponents()
