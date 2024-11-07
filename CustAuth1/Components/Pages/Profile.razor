@@ -1,0 +1,24 @@
+﻿@page "/profile"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>User Profile</h3>
+
+@if (_user != null)
+{
+    <p>Name: @_user.Identity.Name</p>
+    <p>IsAuthenticated: @_user.Identity.IsAuthenticated</p>
+}
+else
+{
+    <p>Please log in to see your profile.</p>
+}
+
+@code {
+    private System.Security.Claims.ClaimsPrincipal _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _user = authState.User;
+    }
+}
