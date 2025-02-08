@@ -1,10 +1,14 @@
 ﻿@page "/weather"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage SessionStorage
 @attribute [StreamRendering]
-@* @attribute [Authorize(Roles = "Admin, Superuser")] *@
+@attribute [Authorize(Roles = "Admin, Superuser")]
 
 <PageTitle>Weather</PageTitle>
 
 <h1>Weather</h1>
+
+<h1>Role : @Role</h1>
 
 <p>This component demonstrates showing data.</p>
 
@@ -39,7 +43,7 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
-
+    string Role = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate streaming rendering
@@ -53,6 +57,9 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
+
+       var userRole = await SessionStorage.GetAsync<string>("UserRole");
+        Role = userRole.Value;
     }
 
     private class WeatherForecast

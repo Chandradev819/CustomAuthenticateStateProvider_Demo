@@ -12,6 +12,7 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddScoped<CustomAuthenticateStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticateStateProvider>());
 builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

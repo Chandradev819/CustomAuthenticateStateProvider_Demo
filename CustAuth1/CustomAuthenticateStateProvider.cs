@@ -7,11 +7,13 @@ namespace CustAuth1
     public class CustomAuthenticateStateProvider : AuthenticationStateProvider
     {
         private readonly ProtectedSessionStorage _sessionStorage;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private ClaimsPrincipal _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
 
-        public CustomAuthenticateStateProvider(ProtectedSessionStorage sessionStorage)
+        public CustomAuthenticateStateProvider(ProtectedSessionStorage sessionStorage, IHttpContextAccessor httpContextAccessor)
         {
             _sessionStorage = sessionStorage;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -21,7 +23,13 @@ namespace CustAuth1
                 return new AuthenticationState(_currentUser);
             }
 
-            await LoadUserFromSessionAsync();
+            var isPrerendering = _httpContextAccessor.HttpContext?.Response.HasStarted == false;
+
+            if (!isPrerendering)
+            {
+                await LoadUserFromSessionAsync();
+            }
+
             return new AuthenticationState(_currentUser);
         }
 
@@ -35,7 +43,6 @@ namespace CustAuth1
                     new Claim(ClaimTypes.Role, "Admin")
                 };
                 _currentUser = new ClaimsPrincipal(new ClaimsIdentity(claims, "BasicAuth"));
-
                 await _sessionStorage.SetAsync("UserRole", "Admin");
                 NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
                 return true;
@@ -52,15 +59,22 @@ namespace CustAuth1
 
         private async Task LoadUserFromSessionAsync()
         {
-            var sessionResult = await _sessionStorage.GetAsync<string>("UserRole");
-            if (sessionResult.Success && sessionResult.Value == "Admin")
+            try
             {
-                var claims = new[]
+                var sessionResult = await _sessionStorage.GetAsync<string>("UserRole");
+                if (sessionResult.Success && sessionResult.Value == "Admin")
                 {
-                    new Claim(ClaimTypes.Name, "admin"),
-                    new Claim(ClaimTypes.Role, "Admin")
-                };
-                _currentUser = new ClaimsPrincipal(new ClaimsIdentity(claims, "BasicAuth"));
+                    var claims = new[]
+                    {
+                        new Claim(ClaimTypes.Name, "admin"),
+                        new Claim(ClaimTypes.Role, "Admin")
+                    };
+                    _currentUser = new ClaimsPrincipal(new ClaimsIdentity(claims, "BasicAuth"));
+                }
+            }
+            catch
+            {
+                // Ignore exceptions during prerendering
             }
         }
     }

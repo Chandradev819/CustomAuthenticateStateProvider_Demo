@@ -6,12 +6,10 @@
 @code {
     private async Task Login1()
     {
-
         var authProvider = (CustomAuthenticateStateProvider)AuthStateProvider;
         var success = await authProvider.LoginAsync("admin", "password");
 
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
         if (success)
         {
             Navigation.NavigateTo("/admin");
