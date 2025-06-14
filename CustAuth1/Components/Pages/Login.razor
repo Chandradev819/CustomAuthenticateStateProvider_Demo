@@ -7,6 +7,7 @@
     private async Task Login1()
     {
         var authProvider = (CustomAuthenticateStateProvider)AuthStateProvider;
+        //Hard coded username and password, for demo
         var success = await authProvider.LoginAsync("admin", "password");
 
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
